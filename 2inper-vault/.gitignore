@@ -1,0 +1,24 @@
+# Graphify cache & temp
+.graphify/
+graph/*.html
+graph/*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Obsidian workspace (개인 설정 — 두 분이 다른 워크스페이스 쓸 수 있음)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+
+# 민감정보 (raw/finance는 별도 private 저장 권장)
+# 아래 주석 해제하면 finance 자체가 git에서 제외됨
+# raw/finance/
+
+# Whisper 전사 캐시 (재생성 가능)
+*.srt.cache
+
+# 임시
+*.tmp
+*.swp
