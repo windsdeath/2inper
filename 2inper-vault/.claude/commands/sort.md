@@ -1,0 +1,28 @@
+---
+description: 미정리된 raw 자료를 분류해 적합한 폴더로 안내합니다 (이동은 사람이)
+---
+
+받은 자료(텍스트, 첨부, URL 등)를 분류만 합니다. 실제 파일 이동·복사는 사람이 결정.
+
+## 절차
+
+1. 자료 내용 빠르게 파악
+2. 다음 중 어디에 속하는지 판정 (복수 가능):
+   - clients / projects / characters / brand-assets / ip-licenses / finance / meetings
+3. 권장 파일 경로와 명명 규칙 제시
+4. 적합한 템플릿 추천
+5. 새 entity가 필요한지, 기존 entity에 추가하면 되는지 판단
+6. 제안만 출력 — **자동 생성·이동 금지**. 사람이 확인 후 `/new-client`, `/new-project`, `/meeting` 등 적절한 명령으로 이어가도록.
+
+## 출력 형식
+
+```
+[분류 결과]
+- 위치: raw/<폴더>/<권장 경로>
+- 템플릿: templates/<적합한 템플릿>
+- 신규 / 기존: <기존 entity와 연결?>
+- 우선 검토 필요: <legal-ip / 사람 / 없음>
+- 다음 명령 제안: /<command> <args>
+```
+
+자료: $ARGUMENTS

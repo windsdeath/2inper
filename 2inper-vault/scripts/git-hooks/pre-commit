@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+# 2INPER vault pre-commit hook
+# 보호 폴더에 대한 직접 수정을 차단합니다.
+#
+# 설치: git config core.hooksPath scripts/git-hooks
+# 우회: 커밋 메시지를 다음 prefix 중 하나로 시작
+#   compiler:           — LLM Wiki 컴파일러
+#   graphify:           — Graphify 자동 생성
+#   legal-ip:           — legal-ip 에이전트가 entity 갱신
+#   knowledge-manager:  — KM 에이전트가 last_reviewed 등 갱신
+#   human-override:     — 사람이 의도적으로 직접 수정 (책임지고)
+
+set -euo pipefail
+
+PROTECTED_PATTERN='^(wiki/concepts/|wiki/communities/|wiki/entities/|graph/|skills/[^/]+/SKILL\.md$|templates/)'
+
+# 스테이징된 파일 중 보호 경로 매치 추출
+CHANGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E "$PROTECTED_PATTERN" || true)
+
+if [ -z "$CHANGED" ]; then
+    exit 0
+fi
+
+# 커밋 메시지 우회 prefix 확인
+COMMIT_MSG_FILE=".git/COMMIT_EDITMSG"
+if [ -f "$COMMIT_MSG_FILE" ]; then
+    FIRST_LINE=$(head -n1 "$COMMIT_MSG_FILE" 2>/dev/null || echo "")
+    if echo "$FIRST_LINE" | grep -qE '^(compiler|graphify|legal-ip|knowledge-manager|human-override):'; then
+        echo "[pre-commit] 보호 경로 변경 허용 — prefix 인식: $FIRST_LINE"
+        exit 0
+    fi
+fi
+
+# 차단
+cat <<'EOF' >&2
+================================================================
+  ❌ COMMIT 차단: 보호 폴더 직접 수정
+================================================================
+다음 파일이 변경되었지만, 이 폴더들은 사람·일반 에이전트의
+직접 수정이 금지되어 있습니다.
+
+EOF
+echo "$CHANGED" | sed 's/^/  - /' >&2
+cat <<'EOF' >&2
+
+보호 정책:
+  wiki/concepts/      → LLM Wiki 컴파일러만 본문 수정 가능
+  wiki/communities/   → Graphify 자동 생성. 직접 편집 금지
+  wiki/entities/      → Graphify + legal-ip 에이전트만
+  graph/              → Graphify 자동 생성. 직접 편집 금지
+  skills/*/SKILL.md   → 사람만, 신중히
+  templates/          → 사람만, 신중히
+
+해결:
+  1) (정상) 변경을 raw/에 노트로 추가하고 컴파일러가 위키를
+     갱신하게 두기 — 권장
+  2) (의도적) 커밋 메시지를 다음 prefix로 시작:
+       compiler:    LLM Wiki 컴파일러 빌드 결과
+       graphify:    Graphify 빌드 결과
+       legal-ip:    legal-ip 에이전트의 entity 갱신
+       knowledge-manager: KM 에이전트의 메타데이터 갱신
+       human-override: 사람이 책임지고 직접 수정
+================================================================
+EOF
+exit 1

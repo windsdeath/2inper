@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# 2INPER vault post-commit hook
+# 커밋이 성공하면 자동으로 origin에 push (백그라운드).
+# Graphify의 그래프 갱신은 별도 (post-commit-graphify에서).
+#
+# 끄기: 이 파일을 삭제하거나 chmod -x 하면 됨
+# 자동 push 끄기: NO_AUTO_PUSH=1 환경변수 설정
+
+set -euo pipefail
+
+if [ "${NO_AUTO_PUSH:-0}" = "1" ]; then
+    exit 0
+fi
+
+# 현재 브랜치 확인
+BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+
+# main / master 외에는 자동 push 안 함 (실험 브랜치 보호)
+if [ "$BRANCH" != "main" ] && [ "$BRANCH" != "master" ]; then
+    echo "[post-commit] 브랜치 '$BRANCH' — 자동 push 건너뜀"
+    exit 0
+fi
+
+# upstream이 설정되어있는지 확인
+if ! git rev-parse --abbrev-ref --symbolic-full-name '@{u}' >/dev/null 2>&1; then
+    echo "[post-commit] upstream 미설정 — 자동 push 건너뜀"
+    exit 0
+fi
+
+# 백그라운드 push (커밋 직후 멈춤 방지)
+( git push --quiet 2>/dev/null && echo "[post-commit] origin push 완료" ) &
+exit 0

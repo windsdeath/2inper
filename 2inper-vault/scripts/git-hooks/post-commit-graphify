@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# graphify 증분 빌드 훅 (백그라운드)
+set -euo pipefail
+VAULT_ROOT="$(git rev-parse --show-toplevel)"
+GRAPHIFY_BIN="$VAULT_ROOT/scripts/graphify/index.js"
+if [ -f "$GRAPHIFY_BIN" ]; then
+  node "$GRAPHIFY_BIN" update &
+fi
+exit 0

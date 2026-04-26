@@ -5,7 +5,7 @@ confidence: high
 owner: knowledge-manager
 tags: [meta, moc, index, agent-entry-point]
 created: 2026-04-25
-last_reviewed: 2026-04-25
+last_reviewed: 2026-04-26
 ---
 
 # Wiki Index
@@ -45,6 +45,7 @@ last_reviewed: 2026-04-25
 
 - [[wiki/concepts/회계 운영 원칙]]
 - [[wiki/concepts/토큰 예산 정책]]
+- [[wiki/concepts/Git 백업 정책]]
 
 ## 엔티티 인덱스
 
@@ -63,6 +64,7 @@ last_reviewed: 2026-04-25
 ## 메타
 
 - [[README]] — vault 전체 안내
+- [[CLAUDE]] — Claude Code 운영 매뉴얼
 - [[frontmatter-standard]] — YAML 스키마
 - [[bootstrap-checklist]] — 셋업 절차
 - [[skills/README]] — 에이전트 명단
